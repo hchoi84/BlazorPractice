@@ -1,0 +1,57 @@
+﻿<div class="job-status">
+
+  <h3>@ListStatus (@Jobs.Count())</h3>
+
+  <ul class="dropzone @dropClass"
+      ondragover="event.preventDefault()"
+      ondragstart="event.dataTransfer.setData('', event.target.id)"
+      @ondrop="HandleDrop"
+      @ondragenter="HandleDragEnter"
+      @ondragleave="HandleDragLeave">
+
+    @foreach (var job in Jobs)
+    {
+      <DragDrop01C JobModel="job"></DragDrop01C>
+    }
+  </ul>
+
+</div>
+
+@code {
+  [CascadingParameter] DragDrop01A Container { get; set; }
+  [Parameter] public JobStatuses ListStatus { get; set; }
+  [Parameter] public JobStatuses[] AllowedStatuses { get; set; }
+
+  List<JobModel> Jobs = new();
+  string dropClass = "";
+
+  protected override void OnParametersSet()
+  {
+    Jobs.Clear();
+    Jobs.AddRange(Container.Jobs.Where(x => x.Status == ListStatus));
+  }
+
+  private void HandleDragEnter()
+  {
+    if (ListStatus == Container.DraggingJob.Status) return;
+
+    if (AllowedStatuses != null && !AllowedStatuses.Contains(Container.DraggingJob.Status))
+      dropClass = "no-drop";
+    else
+      dropClass = "can-drop";
+  }
+
+  private void HandleDragLeave()
+  {
+    dropClass = "";
+  }
+
+  private async Task HandleDrop()
+  {
+    dropClass = "";
+    if (AllowedStatuses != null && !AllowedStatuses.Contains(Container.DraggingJob.Status))
+      return;
+
+    await Container.UpdateJobAsync(ListStatus);
+  }
+}

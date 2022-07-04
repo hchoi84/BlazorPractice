@@ -1,0 +1,24 @@
+﻿@page "/ArbitraryParam01A"
+
+<ArbitraryParam01B type="text"
+                   Placeholder="Placeholder from Parent"
+                   required
+                   MaxLength="100"
+                   Size="50"
+                   someattribute="somevalue">
+</ArbitraryParam01B>
+
+<br />
+<br />
+
+<ArbitraryParam01B type="number"
+                   min="0"
+                   step="1"
+                   onfocus="this.previousValue = this.value"
+                   onkeydown="this.previousValue = this.value"
+                   oninput="validity.valid || (value = this.previousValue)">
+</ArbitraryParam01B>
+
+@code {
+
+}

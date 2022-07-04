@@ -1,0 +1,59 @@
+﻿@page "/dragdrop02a"
+
+<h3>DragDrop02A</h3>
+
+@if (Games != null)
+{
+  <ul ondragover="event.preventDefault();" style="margin:20px">
+    @foreach (var item in Games)
+    {
+      if (item != null)     //Change @ondrop to @ondragover to update UI in real time
+      {
+        <li draggable="true" style="list-style-type:none; height:30px"
+      @key="item.ID" tabindex="1"
+      @ondragover="@(()=> Drop(item))"
+      @ondrag="@(()=> StartDrag(item))">
+          <span>@item.Text</span> <small>@item.ID</small>
+        </li>
+      }
+    }
+  </ul>
+}
+
+@code
+{
+  private List<Game> Games { get; set; }
+  private int draggingIndex;
+
+  protected override void OnInitialized()
+  {
+    Games = new List<Game> {
+      new Game() { ID= "Game1", Text= "American Football"},
+      new Game() { ID= "Game2", Text= "Badminton"  },
+      new Game() { ID= "Game3", Text= "Basketball"  },
+      new Game() { ID= "Game4", Text= "Cricket"},
+      new Game() { ID= "Game5", Text= "Football" },
+      new Game() { ID= "Game6", Text= "Golf"  },
+      new Game() { ID= "Game7", Text= "Hockey"  },
+      new Game() { ID= "Game8", Text= "Rugby" },
+      new Game() { ID= "Game9", Text= "Snooker"  },
+      new Game() { ID= "Game10", Text= "Tennis" },
+    };
+  }
+
+  void StartDrag(Game item) => draggingIndex = GetIndex(item);
+  int GetIndex(Game item) => Games.FindIndex(a => a.ID == item.ID);
+
+  void Drop(Game item)
+  {
+    if (item != null)
+    {
+      var dropIndex = GetIndex(item);
+      var dragging = Games[draggingIndex];
+      Games.RemoveAt(draggingIndex);
+      Games.Insert(dropIndex, dragging);
+      draggingIndex = dropIndex;
+      StateHasChanged();
+    }
+  }
+}

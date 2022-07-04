@@ -1,0 +1,112 @@
+﻿@page "/events01a"
+
+<h3>On Mouse Over</h3>
+@if (VideoGames != null && VideoGames.Count > 0)
+{
+  <ol>
+    @foreach (var videoGame in VideoGames)
+    {
+      <li @onmouseover="args => OnMouseOver(args, videoGame.Title)">@videoGame.Title</li>
+    }
+  </ol>
+}
+<p>@OnMouseOverMessage</p>
+
+
+<h3>On Drag</h3>
+@if (OnDragVideoGames != null && OnDragVideoGames.Count > 0)
+{
+  <ol ondragover="event.preventDefault()">
+    @foreach (var videoGame in OnDragVideoGames)
+    {
+      <li draggable="true"
+      @ondragstart="() => OnDragStart(videoGame)"
+      @ondrop="() => OnDrop(videoGame)">@videoGame.Title</li>
+    }
+  </ol>
+}
+<p>@OnDragMessage</p>
+
+
+<h3>On Click</h3>
+@if (VideoGames != null && VideoGames.Count > 0)
+{
+  <ol ondragover="event.preventDefault()">
+    @foreach (var videoGame in VideoGames)
+    {
+      <li draggable="true"
+      @onclick="args => OnClick(args, videoGame)">@videoGame.Title</li>
+    }
+  </ol>
+}
+<p>@OnClickMessage</p>
+
+@code {
+  public List<VideoGame> VideoGames { get; set; } = new();
+  public string OnMouseOverMessage { get; set; }
+
+  public List<VideoGame> OnDragVideoGames { get; set; } = new();
+  public VideoGame? DraggingVideoGame { get; set; }
+  public string OnDragMessage { get; set; }
+
+  public string OnClickMessage { get; set; }
+
+  protected override void OnInitialized()
+  {
+    List<string> titles = new() { "BioShock", "Batman", "Final Fantasy", "Ni No Kuni", "Max Payne", "Horizon" };
+    for (int i = 0; i < titles.Count; i++)
+    {
+      VideoGames.Add(new() { Id = i, Title = titles[i] });
+    }
+
+    OnDragVideoGames = VideoGames;
+  }
+
+  public void OnMouseOver(MouseEventArgs args, string title) =>
+    OnMouseOverMessage = $"OnMouseOver {title} at position {args.ClientX}:{args.ClientY}";
+
+
+  public void OnDragStart(VideoGame videoGame)
+  {
+    DraggingVideoGame = videoGame;
+    OnDragMessage = $"{videoGame.Title} dragging started";
+  }
+
+  public void OnDrop(VideoGame videoGame)
+  {
+    OnDragMessage = $"Dropped {DraggingVideoGame.Title} on {videoGame.Title}";
+    int droppedId = videoGame.Id;
+    int draggingId = DraggingVideoGame.Id;
+
+    if (draggingId == droppedId) return;
+
+    if (draggingId < droppedId)
+    {
+      for (int i = draggingId + 1; i <= droppedId; i++)
+      {
+        OnDragVideoGames.First(x => x.Id == i).Id = i - 1;
+      }
+    }
+    else
+    {
+      for (int i = draggingId - 1; i >= droppedId; i--)
+      {
+        OnDragVideoGames.First(x => x.Id == i).Id = i + 1;
+      }
+    }
+
+    DraggingVideoGame.Id = droppedId;
+    DraggingVideoGame = null;
+
+    OnDragVideoGames = OnDragVideoGames.OrderBy(x => x.Id).ToList();
+  }
+
+
+  public void OnClick(MouseEventArgs args, VideoGame videoGame)
+  {
+    OnClickMessage = 
+      args.ShiftKey ? $"Clicked {videoGame.Title} with SHIFT"
+    : args.CtrlKey ? $"Clicked {videoGame.Title} with CTRL"
+    : $"Clicked {videoGame.Title}";
+  }
+}

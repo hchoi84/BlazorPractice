@@ -1,0 +1,12 @@
+﻿@*
+  - Place all overridable attributes on the left of @attributes because attributes are processed right to left. If an attribute already exists, it won't update it. 
+  - Alternatively, if the attribute shouldn't get overridden, place it on the right side of @attributes
+  - The "value" attribute doesn't seem to be passable from parent
+*@
+<input @attributes="ArbitraryAttribute" />
+
+@code {
+  //captures all attributes and values sent from parent to here
+  [Parameter(CaptureUnmatchedValues = true)]
+  public Dictionary<string, object> ArbitraryAttribute { get; set; } = new();
+}

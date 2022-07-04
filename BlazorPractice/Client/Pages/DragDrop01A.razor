@@ -1,0 +1,56 @@
+﻿@page "/dragdrop01a"
+
+<h3>DragDrop01A</h3>
+
+<div class="jobs-container">
+  <CascadingValue Value="this">
+    <DragDrop01B ListStatus="JobStatuses.Todo"
+             AllowedStatuses="@(new JobStatuses[]{JobStatuses.Started})"></DragDrop01B>
+    <DragDrop01B ListStatus="JobStatuses.Started"
+             AllowedStatuses="@(new JobStatuses[]{JobStatuses.Todo})"></DragDrop01B>
+    <DragDrop01B ListStatus="JobStatuses.Completed"
+             AllowedStatuses="@(new JobStatuses[]{JobStatuses.Started})"></DragDrop01B>
+  </CascadingValue>
+</div>
+
+<hr />
+<p>Last Updated Job <strong>@lastUpdatedJob</strong></p>
+<hr />
+
+@foreach (var task in Jobs)
+{
+  <p>@task.Detail - <strong>@task.Status</strong></p>
+}
+
+@code {
+  public List<JobModel> Jobs = new();
+  string lastUpdatedJob = "";
+  public JobModel DraggingJob { get; set; }
+
+  protected override void OnInitialized()
+  {
+    for (int i = 0; i < 5; i++)
+    {
+      Jobs.Add(new()
+        {
+          Id = i,
+          Detail = "Job " + i,
+          Status = JobStatuses.Todo,
+          UpdatedTime = DateTime.Now
+        });
+    }
+  }
+
+  public async Task UpdateJobAsync(JobStatuses newStatus)
+  {
+    var task = Jobs.SingleOrDefault(x => x.Id == DraggingJob.Id);
+    if (task != null)
+    {
+      task.Status = newStatus;
+      task.UpdatedTime = DateTime.Now;
+      lastUpdatedJob = DraggingJob.Detail;
+    }
+
+    StateHasChanged();
+  }
+}
