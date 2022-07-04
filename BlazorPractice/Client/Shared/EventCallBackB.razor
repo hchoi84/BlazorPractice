@@ -1,0 +1,20 @@
+﻿<tr>
+  <td scope="row">@VideoGame.Id</td>
+  <td>@VideoGame.Title</td>
+  <td>
+    <button @onclick="Delete">Delete</button>
+  </td>
+</tr>
+
+@code {
+  [Parameter]
+  public VideoGame VideoGame { get; set; }
+
+  [Parameter]
+  public EventCallback<VideoGame> DeleteVideoGame { get; set; }
+
+  public void Delete()
+  {
+    DeleteVideoGame.InvokeAsync(VideoGame);
+  }
+}

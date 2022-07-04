@@ -1,0 +1,46 @@
+﻿@page "/bind"
+
+<input type="checkbox" id="checkbox" @onchange="OnChange" />
+<label for="checkbox">Change Color</label>
+
+@if (VideoGames.Count > 0)
+{
+  <table class="table">
+    <thead>
+      <tr>
+        <td scope="col">Id</td>
+        <td scope="col">Title</td>
+      </tr>
+    </thead>
+    <tbody>
+      @for (var i = 0; i < VideoGames.Count; i++)
+      {
+        <tr class="@(i % 2 == 0 ? Class : string.Empty)">
+          <td scope="row">@VideoGames[i].Id</td>
+          <td>@VideoGames[i].Title</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+
+
+@code {
+  public List<VideoGame> VideoGames { get; set; } = new();
+  public string Class { get; set; } = "text-primary";
+
+  protected override void OnInitialized()
+  {
+    List<string> titles = new() { "BioShock", "Batman", "Final Fantasy", "Ni No Kuni", "Max Payne", "Horizon" };
+    for (int i = 0; i < titles.Count; i++)
+    {
+      VideoGames.Add(new() { Id = i, Title = titles[i] });
+    }
+  }
+
+  private void OnChange(ChangeEventArgs args)
+  {
+    Class = (bool)args.Value ? "text-danger" : "text-primary";
+  }
+}

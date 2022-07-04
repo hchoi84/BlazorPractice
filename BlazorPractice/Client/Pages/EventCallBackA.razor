@@ -1,0 +1,46 @@
+﻿@page "/eventcallbackA"
+
+<h3>EventCallBack</h3>
+
+@if (VideoGames.Count > 0)
+{
+  <table class="table">
+    <thead>
+      <tr>
+        <td scope="col">Id</td>
+        <td scope="col">Title</td>
+        <td scope="col">Action</td>
+      </tr>
+    </thead>
+    <tbody>
+      @for (var i = 0; i < VideoGames.Count; i++)
+      {
+        <EventCallBackB VideoGame="VideoGames[i]" DeleteVideoGame="Delete"></EventCallBackB>
+      }
+    </tbody>
+  </table>
+}
+
+
+@code {
+  public List<VideoGame> VideoGames { get; set; } = new();
+
+  protected override void OnInitialized()
+  {
+    List<string> titles = new() { "BioShock", "Batman", "Final Fantasy", "Ni No Kuni", "Max Payne", "Horizon" };
+    for (int i = 0; i < titles.Count; i++)
+    {
+      VideoGames.Add(new() { Id = i, Title = titles[i] });
+    }
+  }
+
+  public void Delete(VideoGame videoGame)
+  {
+    VideoGames.Remove(videoGame);
+    int index = 0;
+    foreach (var vg in VideoGames)
+    {
+      vg.Id = index++;
+    }
+  }
+}

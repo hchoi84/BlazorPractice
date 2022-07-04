@@ -1,12 +1,21 @@
-﻿@page "/events01a"
+﻿@page "/event"
 
 <h3>On Mouse Over</h3>
 @if (VideoGames != null && VideoGames.Count > 0)
 {
+  <input id="checkbox" type="checkbox" @onchange="() => DisplayButtons = !DisplayButtons" />
+  @*<input id="checkbox" type="checkbox" @bind="DisplayButtons" />*@
+  <label for="checkbox">Show/Hide Buttons</label>
   <ol>
     @foreach (var videoGame in VideoGames)
     {
-      <li @onmouseover="args => OnMouseOver(args, videoGame.Title)">@videoGame.Title</li>
+      <li @onmouseover="args => OnMouseOver(args, videoGame.Title)">
+        @videoGame.Title
+        @if (DisplayButtons)
+        {
+          <button @onclick="() => OnClick(videoGame)">Info</button>
+        }
+      </li>
     }
   </ol>
 }
@@ -44,6 +53,7 @@
 @code {
   public List<VideoGame> VideoGames { get; set; } = new();
   public string OnMouseOverMessage { get; set; }
+  public bool DisplayButtons { get; set; } = false;
 
   public List<VideoGame> OnDragVideoGames { get; set; } = new();
   public VideoGame? DraggingVideoGame { get; set; }
@@ -64,6 +74,9 @@
 
   public void OnMouseOver(MouseEventArgs args, string title) =>
     OnMouseOverMessage = $"OnMouseOver {title} at position {args.ClientX}:{args.ClientY}";
+
+  public void OnClick(VideoGame videoGame) =>
+    OnMouseOverMessage = $"Displaying info for {videoGame.Title}";
 
 
   public void OnDragStart(VideoGame videoGame)
@@ -104,7 +117,7 @@
 
   public void OnClick(MouseEventArgs args, VideoGame videoGame)
   {
-    OnClickMessage = 
+    OnClickMessage =
       args.ShiftKey ? $"Clicked {videoGame.Title} with SHIFT"
     : args.CtrlKey ? $"Clicked {videoGame.Title} with CTRL"
     : $"Clicked {videoGame.Title}";
